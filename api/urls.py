@@ -17,6 +17,7 @@ router.register(r'historial-medico', HistorialMedicoClientasViewSet, basename='h
 router.register(r'horario-clase', HorariosClaseViewSet, basename='horario_clase')
 router.register(r'instructores', InstructoresViewSet, basename='instructores')
 router.register(r'contar-clienta-clase', ContadorClientaClasesViewSet, basename='contar_clienta_clase')
+router.register(r'usuarios', UserViewSet, basename='user')
 
 # Agregar la URL de inicio de sesión
 urlpatterns = [

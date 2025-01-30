@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework import filters
 from rest_framework.response import Response
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from .models import *
 from .serializers import *
@@ -17,6 +18,7 @@ from django.utils.timezone import now
 from datetime import datetime,timedelta
 from django.utils import timezone
 import time
+from .search import *
 
 logger = logging.getLogger(__name__)
 
@@ -888,12 +890,17 @@ class ClientasHasDisciplinasViewSet(viewsets.ModelViewSet):
 class ContactoDeEmergenciaViewSet(viewsets.ModelViewSet):
     queryset = ContactoDeEmergencia.objects.all()
     serializer_class = ContactoDeEmergenciaSerializer
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend,]
+    filterset_class = filterContactoEmergencia
+    search_fields = ['id_clienta']
     permission_classes = [permissions.AllowAny]
 
 class HistorialMedicoClientasViewSet(viewsets.ModelViewSet):
     queryset = HistorialMedicoClientas.objects.select_related('id_clienta')
     serializer_class = HistorialMedicoClientasSerializer
-    filter_backends = [filters.SearchFilter]
+    filter_backends = [django_filters.rest_framework.DjangoFilterBackend,]
+    filterset_class = filterHistorialMedico
+    search_fields = ['id_clienta']
     permission_classes = [permissions.AllowAny]
 
 class HorariosClaseViewSet(viewsets.ModelViewSet):
@@ -906,6 +913,11 @@ class InstructoresViewSet(viewsets.ModelViewSet):
     serializer_class = InstructoresSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['^rut_instructor', '^nombres']
+    permission_classes = [permissions.AllowAny]
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
     permission_classes = [permissions.AllowAny]
 
 
