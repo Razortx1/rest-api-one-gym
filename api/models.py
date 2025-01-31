@@ -18,6 +18,12 @@ class Auth(models.Model):
     class Meta:
         db_table = 'auth'
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)  # Relacionamos con el modelo User de Django
+    clienta = models.ForeignKey('Clientas', on_delete=models.CASCADE)  # Relación con Clientas
+
+    def __str__(self):
+        return f"{self.user.username} - {self.clienta.nombre}"
 
 class CantidadClasesDisciplina(models.Model):
     id_cantidad_clases_disciplina = models.AutoField(primary_key=True)
