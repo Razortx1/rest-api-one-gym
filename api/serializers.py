@@ -134,8 +134,50 @@ class ContarClientasSerializer(serializers.ModelSerializer):
         model = Clientas
         fields = '__all__'
 
-
 class UserSerializer(serializers.ModelSerializer):
+    clienta = serializers.PrimaryKeyRelatedField(queryset=Clientas.objects.all(), source='userprofile.clienta')
+
     class Meta:
         model = User
-        fields = '__all__'
+        fields = ['id','username', 'email', 'password', 'clienta']
+
+    def create(self, validated_data):
+        # Extraemos la clienta de los datos validados
+        clienta = validated_data.pop('userprofile', None)  # Asegúrate de que 'userprofile' esté bien configurado
+        password = validated_data.pop('password')
+        
+        # Crear el usuario (sin la relación con Clienta todavía)
+        user = User.objects.create(**validated_data)
+
+        # Cifrar la contraseña antes de guardarla
+        user.set_password(password)
+        user.save()
+
+        # Crear el UserProfile asociado con la Clienta
+        if clienta:
+            UserProfile.objects.create(user=user, clienta=clienta['clienta'])
+        return user
+
+    def update(self, instance, validated_data):
+        # Primero extraemos el campo 'clienta' del validated_data
+        clienta_data = validated_data.pop('userprofile', None)
+        
+        # Si se ha proporcionado una nueva contraseña, la extraemos y la ciframos
+        password = validated_data.pop('password', None)
+        if password:
+            instance.set_password(password)
+
+        # Actualizamos los demás campos del usuario
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        instance.save()  # Guardamos el usuario actualizado
+
+        # Ahora actualizamos la relación con UserProfile
+        if clienta_data:
+            # Si ya existe un UserProfile para este usuario, lo actualizamos
+            user_profile = instance.userprofile  # La relación con UserProfile ya existe
+            user_profile.clienta = clienta_data['clienta']
+            user_profile.save()  # Guardamos el UserProfile actualizado
+
+        return instance
