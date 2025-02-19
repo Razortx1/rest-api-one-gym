@@ -37,6 +37,14 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+CORS_ALLOWED_ORIGINS = [
+    'GET',
+    'POST',
+    'PATCH',
+    'PUT',
+    'DELETE',
+]
+
 
 # Application definition
 
@@ -70,6 +78,11 @@ CORS_ALLOWED_ORIGINS = [
     'http://172.20.10.3:3000',
     'http://localhost:3000',
     # Ajusta según la IP de tu aplicación
+]
+
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'authorization',  # Si usas autenticación con token
 ]
 
 
